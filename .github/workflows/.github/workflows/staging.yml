@@ -1,0 +1,25 @@
+name: Deploy to staging
+
+on:
+  workflow_dispatch:
+  pull_request:
+    types:
+      - closed
+    branches:
+      - staging
+
+jobs:
+  deploy:
+    timeout-minutes: 10
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to Staging
+        id: deploy
+        continue-on-error: true
+        uses: fifsky/ssh-action@master
+        with:
+          host: ${{ secrets.STAGING_SERVER }}
+          user: ${{ secrets.STAGING_USER }}
+          key: ${{ secrets.STAGING_PRIVATE_KEY }}
+          command: bash -i -c 'cd /home/ubuntu/Project-Backend && git checkout package-lock.json && git pull && npm i && npm run migrate && npm run build && pm2 restart all'
