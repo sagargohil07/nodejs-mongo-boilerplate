@@ -7,21 +7,14 @@ import compression from 'compression';
 import http from 'http';
 import { Server } from 'socket.io';
 
-// Load environment variables
-dotenv.config();
-
-// Import routes
 import authRoutes from './routes/auth.routes';
 import userRoutes from './routes/user.routes';
 
-// Import middlewares
 import { errorHandler } from './middlewares/error.middleware';
-
-// Import socket handler
 import { initializeSocket } from './socket/socker.handler';
-
-// Import database config
 import { connectDB } from './config/database';
+
+dotenv.config();
 
 const app: Application = express();
 const server = http.createServer(app);
@@ -32,7 +25,6 @@ const io = new Server(server, {
   }
 });
 
-// Middleware
 app.use(helmet());
 app.use(cors());
 app.use(compression());
@@ -51,42 +43,35 @@ app.get('/', (req, res) => {
   });
 });
 
-// Routes
+
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 
-// Initialize Socket.IO
 initializeSocket(io);
 
-// Error handling middleware (must be last)
 app.use(errorHandler);
 
-// Server configuration
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3000;
 
-// Connect to database and start server
 const startServer = async () => {
   try {
-    // Connect to MongoDB
     await connectDB();
 
-    // Start server
     server.listen(PORT, () => {
-      console.log(`🚀 Server running on port ${PORT}`);
-      console.log(`📡 Socket.IO server ready`);
-      console.log(`🌍 Environment: ${process.env.NODE_ENV}`);
+      console.log(`Server running on port ${PORT}`);
+      console.log(`Socket.IO server ready`);
+      console.log(` Environment: ${process.env.NODE_ENV}`);
     });
   } catch (error) {
-    console.error('❌ Failed to start server:', error);
+    console.error('Failed to start server:', error);
     process.exit(1);
   }
 };
 
 startServer();
 
-// Handle unhandled promise rejections
 process.on('unhandledRejection', (err: Error) => {
-  console.error('❌ Unhandled Rejection:', err.message);
+  console.error('Unhandled Rejection:', err.message);
   server.close(() => process.exit(1));
 });
 

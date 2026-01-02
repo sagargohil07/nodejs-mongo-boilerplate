@@ -1,15 +1,15 @@
 import { Router } from 'express';
 import { AuthController } from '../controllers/auth.controller';
-import { validate, registerSchema, loginSchema } from '../middlewares/validation.middleware';
+import { validate, registerSchema, loginSchema, refreshTokenSchema } from '../middlewares/validation.middleware';
 import { authenticate } from '../middlewares/auth.middleware';
 
-const router = Router();
+const authRoutes = Router();
 
-// Public routes
-router.post('/register', validate(registerSchema), AuthController.register);
-router.post('/login', validate(loginSchema), AuthController.login);
+authRoutes.post('/refresh', validate(refreshTokenSchema), AuthController.refreshToken);
+authRoutes.post('/register', validate(registerSchema), AuthController.register);
+authRoutes.post('/login', validate(loginSchema), AuthController.login);
 
-// Protected routes
-router.get('/profile', authenticate, AuthController.getProfile);
+authRoutes.post('/logout', authenticate, AuthController.logout);
+authRoutes.get('/profile', authenticate, AuthController.getProfile);
 
-export default router;
+export default authRoutes;

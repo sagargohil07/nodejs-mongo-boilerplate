@@ -10,6 +10,7 @@ interface Message {
 const activeUsers = new Map<string, string>();
 
 export const initializeSocket = (io: Server) => {
+
   io.on('connection', (socket: Socket) => {
     console.log(`✅ User connected: ${socket.id}`);
 

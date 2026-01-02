@@ -50,6 +50,12 @@ export const loginSchema = Joi.object({
   })
 });
 
+export const refreshTokenSchema = Joi.object({
+  refreshToken: Joi.string().required().messages({
+    'any.required': 'Refresh token is required'
+  })
+});
+
 export const updateUserSchema = Joi.object({
   name: Joi.string().min(2).max(50).messages({
     'string.min': 'Name must be at least 2 characters',

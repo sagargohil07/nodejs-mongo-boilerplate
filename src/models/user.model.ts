@@ -1,13 +1,12 @@
 import mongoose, { Document, Schema } from 'mongoose';
-import bcrypt from 'bcryptjs';
 
 export interface IUser extends Document {
   name: string;
   email: string;
   password: string;
+  refreshToken?: string;
   createdAt: Date;
   updatedAt: Date;
-  comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
 const userSchema = new Schema<IUser>(
@@ -32,18 +31,16 @@ const userSchema = new Schema<IUser>(
       required: [true, 'Password is required'],
       minlength: [6, 'Password must be at least 6 characters'],
       select: false
+    },
+    refreshToken: {
+      type: String,
+      select: false
     }
   },
   {
     timestamps: true
   }
 );
-
-userSchema.methods.comparePassword = async function (
-  candidatePassword: string
-): Promise<boolean> {
-  return await bcrypt.compare(candidatePassword, this.password);
-};
 
 const User = mongoose.model<IUser>('User', userSchema);
 
