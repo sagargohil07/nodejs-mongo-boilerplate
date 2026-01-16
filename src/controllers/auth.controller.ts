@@ -4,9 +4,9 @@ import { JWTUtil } from '../utils/jwt.util';
 import { ResponseUtil } from '../utils/response.util';
 import bcrypt from 'bcryptjs';
 
-export class AuthController {
+class AuthController {
 
-  static async refreshToken(req: Request, res: Response) {
+  async refreshToken(req: Request, res: Response) {
     try {
       const { refreshToken } = req.body;
 
@@ -39,7 +39,7 @@ export class AuthController {
     }
   }
 
-  static async register(req: Request, res: Response) {
+  async register(req: Request, res: Response) {
     try {
       const { name, email, password } = req.body;
 
@@ -81,7 +81,7 @@ export class AuthController {
     }
   }
 
-  static async login(req: Request, res: Response) {
+  async login(req: Request, res: Response) {
     try {
       const { email, password } = req.body;
 
@@ -124,7 +124,7 @@ export class AuthController {
     }
   }
 
-  static async logout(req: Request, res: Response) {
+  async logout(req: Request, res: Response) {
     try {
       const userId = req.user?.userId;
 
@@ -140,7 +140,7 @@ export class AuthController {
     }
   }
 
-  static async getProfile(req: Request, res: Response) {
+  async getProfile(req: Request, res: Response) {
     try {
       const user = await User.findById(req.user?.userId);
 
@@ -159,3 +159,5 @@ export class AuthController {
     }
   }
 }
+
+export const authController = new AuthController();

@@ -3,18 +3,6 @@ import { JWTUtil } from '../utils/jwt.util';
 import { ResponseUtil } from '../utils/response.util';
 import User from '../models/user.model';
 
-// Extend Express Request type
-declare global {
-  namespace Express {
-    interface Request {
-      user?: {
-        userId: string;
-        email: string;
-      };
-    }
-  }
-}
-
 export const authenticate = async (
   req: Request,
   res: Response,

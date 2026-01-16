@@ -2,9 +2,8 @@ import { Request, Response } from 'express';
 import User from '../models/user.model';
 import { ResponseUtil } from '../utils/response.util';
 
-export class UserController {
-  // Get all users with pagination
-  static async getAllUsers(req: Request, res: Response) {
+class UserController {
+  async getAllUsers(req: Request, res: Response) {
     try {
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 10;
@@ -12,16 +11,15 @@ export class UserController {
 
       const searchQuery = req.query.search
         ? {
-            $or: [
-              { name: { $regex: String(req.query.search), $options: 'i' } },  // Cast to string
-              { email: { $regex: String(req.query.search), $options: 'i' } }   // Cast to string
-            ]
-          }
+          $or: [
+            { name: { $regex: String(req.query.search), $options: 'i' } },
+            { email: { $regex: String(req.query.search), $options: 'i' } }
+          ]
+        }
         : {};
-      // Get total count
+
       const total = await User.countDocuments(searchQuery);
 
-      // Get users
       const users = await User.find(searchQuery)
         .select('-password')
         .skip(skip)
@@ -51,8 +49,7 @@ export class UserController {
     }
   }
 
-  // Get user by ID
-  static async getUserById(req: Request, res: Response) {
+  async getUserById(req: Request, res: Response) {
     try {
       const { id } = req.params;
 
@@ -73,13 +70,11 @@ export class UserController {
     }
   }
 
-  // Update user
-  static async updateUser(req: Request, res: Response) {
+  async updateUser(req: Request, res: Response) {
     try {
       const { id } = req.params;
       const { name, email } = req.body;
 
-      // Check if trying to update to an existing email
       if (email) {
         const existingUser = await User.findOne({ email, _id: { $ne: id } });
         if (existingUser) {
@@ -108,8 +103,7 @@ export class UserController {
     }
   }
 
-  // Delete user
-  static async deleteUser(req: Request, res: Response) {
+  async deleteUser(req: Request, res: Response) {
     try {
       const { id } = req.params;
 
@@ -127,3 +121,5 @@ export class UserController {
     }
   }
 }
+
+export const userController = new UserController();

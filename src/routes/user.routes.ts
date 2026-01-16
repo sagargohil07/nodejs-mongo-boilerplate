@@ -1,17 +1,15 @@
 import { Router } from 'express';
-import { UserController } from '../controllers/user.controller';
+import { userController } from '../controllers/user.controller';
 import { authenticate } from '../middlewares/auth.middleware';
 import { validate, updateUserSchema } from '../middlewares/validation.middleware';
 
 const userRoutes = Router();
 
-// All user routes are protected
 userRoutes.use(authenticate);
 
-// User CRUD routes
-userRoutes.get('/', UserController.getAllUsers);
-userRoutes.get('/:id', UserController.getUserById);
-userRoutes.put('/:id', validate(updateUserSchema), UserController.updateUser);
-userRoutes.delete('/:id', UserController.deleteUser);
+userRoutes.get('/', userController.getAllUsers.bind(userController));
+userRoutes.get('/:id', userController.getUserById.bind(userController));
+userRoutes.put('/:id', validate(updateUserSchema), userController.updateUser.bind(userController));
+userRoutes.delete('/:id', userController.deleteUser.bind(userController));
 
 export default userRoutes;
