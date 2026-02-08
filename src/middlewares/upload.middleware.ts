@@ -1,7 +1,4 @@
-import multer, { Multer } from "multer";
-import path from "node:path";
-import { fileController } from "../controllers/file.controller";
-import { callbackify } from "node:util";
+import multer from "multer";
 
 //Storing in uploads directory
 const storage = multer.diskStorage({
