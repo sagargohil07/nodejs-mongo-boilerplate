@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 import User from '../models/user.model';
-import { ResponseUtil } from '../utils/response.util';
 
 class UserController {
   async getAllUsers(req: Request, res: Response) {
@@ -9,14 +8,12 @@ class UserController {
       const limit = parseInt(req.query.limit as string) || 10;
       const skip = (page - 1) * limit;
 
-      const searchQuery = req.query.search
-        ? {
-          $or: [
-            { name: { $regex: String(req.query.search), $options: 'i' } },
-            { email: { $regex: String(req.query.search), $options: 'i' } }
-          ]
-        }
-        : {};
+      const searchQuery = req.query.search ? {
+        $or: [
+          { name: { $regex: String(req.query.search), $options: 'i' } },
+          { email: { $regex: String(req.query.search), $options: 'i' } }
+        ]
+      } : {};
 
       const total = await User.countDocuments(searchQuery);
 
@@ -28,24 +25,29 @@ class UserController {
 
       const totalPages = Math.ceil(total / limit);
 
-      return ResponseUtil.success(
-        res,
-        'Users retrieved successfully',
-        users.map(user => ({
-          id: user._id,
-          name: user.name,
-          email: user.email,
-          createdAt: user.createdAt
-        })),
-        {
+      const userDetails = users.map(user => ({
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        createdAt: user.createdAt
+      }));
+
+      return res.status(200).json({
+        status: 200,
+        message: 'Users retrieved successfully',
+        data: userDetails,
+        pagination: {
           page,
           limit,
           total,
           totalPages
         }
-      );
+      });
     } catch (error) {
-      return ResponseUtil.internalServerError(res, 'Failed to get users', error);
+      return res.status(500).json({
+        status: 500,
+        message: 'Failed to get users'
+      });
     }
   }
 
@@ -56,17 +58,27 @@ class UserController {
       const user = await User.findById(id);
 
       if (!user) {
-        return ResponseUtil.notFound(res, 'User not found');
+        return res.status(404).json({
+          status: 404,
+          message: 'User not found'
+        });
       }
 
-      return ResponseUtil.success(res, 'User retrieved successfully', {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        createdAt: user.createdAt
+      return res.status(200).json({
+        status: 200,
+        message: 'User retrieved successfully',
+        data: {
+          id: user._id,
+          name: user.name,
+          email: user.email,
+          createdAt: user.createdAt
+        }
       });
     } catch (error) {
-      return ResponseUtil.internalServerError(res, 'Failed to get user', error);
+      return res.status(500).json({
+        status: 500,
+        message: 'Failed to get user'
+      });
     }
   }
 
@@ -78,7 +90,10 @@ class UserController {
       if (email) {
         const existingUser = await User.findOne({ email, _id: { $ne: id } });
         if (existingUser) {
-          return ResponseUtil.badRequest(res, 'Email already in use');
+          return res.status(400).json({
+            status: 400,
+            message: 'Email already in use'
+          });
         }
       }
 
@@ -89,17 +104,27 @@ class UserController {
       );
 
       if (!user) {
-        return ResponseUtil.notFound(res, 'User not found');
+        return res.status(404).json({
+          status: 404,
+          message: 'User not found'
+        });
       }
 
-      return ResponseUtil.success(res, 'User updated successfully', {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        updatedAt: user.updatedAt
+      return res.status(200).json({
+        status: 200,
+        message: 'User updated successfully',
+        data: {
+          id: user._id,
+          name: user.name,
+          email: user.email,
+          updatedAt: user.updatedAt
+        }
       });
     } catch (error) {
-      return ResponseUtil.internalServerError(res, 'Failed to update user', error);
+      return res.status(500).json({
+        status: 500,
+        message: 'Failed to update user'
+      });
     }
   }
 
@@ -110,14 +135,24 @@ class UserController {
       const user = await User.findByIdAndDelete(id);
 
       if (!user) {
-        return ResponseUtil.notFound(res, 'User not found');
+        return res.status(404).json({
+          status: 404,
+          message: 'User not found'
+        });
       }
 
-      return ResponseUtil.success(res, 'User deleted successfully', {
-        id: user._id
+      return res.status(200).json({
+        status: 200,
+        message: 'User deleted successfully',
+        data: {
+          id: user._id
+        }
       });
     } catch (error) {
-      return ResponseUtil.internalServerError(res, 'Failed to delete user', error);
+      return res.status(500).json({
+        status: 500,
+        message: 'Failed to delete user'
+      });
     }
   }
 }

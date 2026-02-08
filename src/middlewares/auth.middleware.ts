@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
 import { JWTUtil } from '../utils/jwt.util';
-import { ResponseUtil } from '../utils/response.util';
 import User from '../models/user.model';
 
 export const authenticate = async (
@@ -13,7 +12,10 @@ export const authenticate = async (
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return ResponseUtil.unauthorized(res, 'No token provided');
+      return res.status(401).json({
+        status: 401,
+        message: 'No token provided'
+      });
     }
 
     const token = authHeader.split(' ')[1];
@@ -22,14 +24,20 @@ export const authenticate = async (
     const decoded = JWTUtil.verifyToken(token);
 
     if (!decoded) {
-      return ResponseUtil.unauthorized(res, 'Invalid or expired token');
+      return res.status(401).json({
+        status: 401,
+        message: 'Invalid or expired token'
+      });
     }
 
     // Check if user exists
     const user = await User.findById(decoded.userId);
 
     if (!user) {
-      return ResponseUtil.unauthorized(res, 'User not found');
+      return res.status(401).json({
+        status: 401,
+        message: 'User not found'
+      });
     }
 
     // Attach user to request
@@ -40,6 +48,9 @@ export const authenticate = async (
 
     next();
   } catch (error) {
-    return ResponseUtil.internalServerError(res, 'Authentication failed', error);
+    return res.status(500).json({
+      status: 500,
+      message: 'Authentication failed'
+    });
   }
 };

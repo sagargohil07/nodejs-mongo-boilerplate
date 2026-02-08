@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
 import Joi from 'joi';
-import { ResponseUtil } from '../utils/response.util';
 
 export const validate = (schema: Joi.ObjectSchema) => {
   return (req: Request, res: Response, next: NextFunction) => {
@@ -15,7 +14,11 @@ export const validate = (schema: Joi.ObjectSchema) => {
         message: detail.message
       }));
 
-      return ResponseUtil.badRequest(res, 'Validation failed', errors);
+      return res.status(400).json({
+        status: 400,
+        message: 'Validation failed',
+        data: errors
+      });
     }
 
     req.body = value;

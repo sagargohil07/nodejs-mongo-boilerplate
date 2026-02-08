@@ -5,11 +5,11 @@ import { authenticate } from '../middlewares/auth.middleware';
 
 const authRoutes = Router();
 
-authRoutes.post('/refresh', validate(refreshTokenSchema), authController.refreshToken.bind(authController));
-authRoutes.post('/register', validate(registerSchema), authController.register.bind(authController));
-authRoutes.post('/login', validate(loginSchema), authController.login.bind(authController));
+authRoutes.post('/refresh', validate(refreshTokenSchema), authController.refreshToken);
+authRoutes.post('/register', validate(registerSchema), authController.register);
+authRoutes.post('/login', validate(loginSchema), authController.login);
 
-authRoutes.post('/logout', authenticate, authController.logout.bind(authController));
-authRoutes.get('/profile', authenticate, authController.getProfile.bind(authController));
+authRoutes.post('/logout', authenticate, authController.logout);
+authRoutes.get('/profile', authenticate, authController.getProfile);
 
 export default authRoutes;

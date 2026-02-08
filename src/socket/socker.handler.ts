@@ -12,12 +12,12 @@ const activeUsers = new Map<string, string>();
 export const initializeSocket = (io: Server) => {
 
   io.on('connection', (socket: Socket) => {
-    console.log(`✅ User connected: ${socket.id}`);
+    console.log(`User connected: ${socket.id}`);
 
     // Handle user joining
     socket.on('join', (username: string) => {
       activeUsers.set(socket.id, username);
-      console.log(`👤 ${username} joined the chat`);
+      console.log(`${username} joined the chat`);
 
       // Notify all users
       io.emit('user_joined', {
@@ -41,7 +41,7 @@ export const initializeSocket = (io: Server) => {
         timestamp: new Date()
       };
 
-      console.log(`💬 Message from ${data.username}: ${data.message}`);
+      console.log(`Message from ${data.username}: ${data.message}`);
 
       // Broadcast message to all users
       io.emit('message', messageData);
@@ -83,7 +83,7 @@ export const initializeSocket = (io: Server) => {
       const username = activeUsers.get(socket.id);
       activeUsers.delete(socket.id);
 
-      console.log(`❌ User disconnected: ${socket.id}`);
+      console.log(`User disconnected: ${socket.id}`);
 
       if (username) {
         io.emit('user_left', {
@@ -100,5 +100,4 @@ export const initializeSocket = (io: Server) => {
     });
   });
 
-  console.log('🔌 Socket.IO handlers initialized');
 };
